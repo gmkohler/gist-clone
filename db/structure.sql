@@ -62,6 +62,20 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: comments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.comments (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    author_id uuid NOT NULL,
+    gist_id uuid NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    body text NOT NULL
+);
+
+
+--
 -- Name: forks; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -116,6 +130,30 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: stars; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.stars (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    gist_id uuid NOT NULL,
+    created_at timestamp without time zone
+);
+
+
+--
+-- Name: subscriptions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subscriptions (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    subscriber_id uuid NOT NULL,
+    gist_id uuid NOT NULL,
+    created_at timestamp without time zone
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -126,6 +164,14 @@ CREATE TABLE public.users (
     handle public.citext NOT NULL,
     display_name text NOT NULL
 );
+
+
+--
+-- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
 
 
 --
@@ -166,6 +212,22 @@ ALTER TABLE ONLY public.revisions
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (filename);
+
+
+--
+-- Name: stars stars_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stars
+    ADD CONSTRAINT stars_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id);
 
 
 --
@@ -212,10 +274,54 @@ CREATE INDEX revisions_created_at_index ON public.revisions USING btree (created
 
 
 --
+-- Name: stars_gist_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX stars_gist_id_index ON public.stars USING btree (gist_id);
+
+
+--
+-- Name: stars_user_id_gist_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX stars_user_id_gist_id_index ON public.stars USING btree (user_id, gist_id);
+
+
+--
+-- Name: subscriptions_gist_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subscriptions_gist_id_index ON public.subscriptions USING btree (gist_id);
+
+
+--
+-- Name: subscriptions_subscriber_id_gist_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX subscriptions_subscriber_id_gist_id_index ON public.subscriptions USING btree (subscriber_id, gist_id);
+
+
+--
 -- Name: users_handle_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX users_handle_index ON public.users USING btree (handle);
+
+
+--
+-- Name: comments comments_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.users(id);
+
+
+--
+-- Name: comments comments_gist_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_gist_id_fkey FOREIGN KEY (gist_id) REFERENCES public.gists(id);
 
 
 --
@@ -267,8 +373,41 @@ ALTER TABLE ONLY public.revisions
 
 
 --
+-- Name: stars stars_gist_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stars
+    ADD CONSTRAINT stars_gist_id_fkey FOREIGN KEY (gist_id) REFERENCES public.gists(id);
+
+
+--
+-- Name: stars stars_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.stars
+    ADD CONSTRAINT stars_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: subscriptions subscriptions_gist_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT subscriptions_gist_id_fkey FOREIGN KEY (gist_id) REFERENCES public.gists(id);
+
+
+--
+-- Name: subscriptions subscriptions_subscriber_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subscriptions
+    ADD CONSTRAINT subscriptions_subscriber_id_fkey FOREIGN KEY (subscriber_id) REFERENCES public.users(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" ("filename") VALUES ('20190511201659_create_core_models.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20190513170550_add_social_tables.rb');

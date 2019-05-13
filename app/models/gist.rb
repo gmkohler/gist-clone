@@ -6,8 +6,13 @@ class Gist < Sequel::Model
 
   one_to_many :forks, key: :forked_from_id
   many_to_many :forked_gists, class: "Gist", join_table: :forks, left_key: :forked_from_id, right_key: :forked_to_id
-
   one_through_many :original_gist, [[:forks, :forked_to_id, :forked_from_id]], class: "Gist"
+
+  one_to_many :stars
+  one_to_many :comments
+
+  one_to_many :subscriptions
+  many_to_many :subscribers, class: "User", join_table: :subscriptions
 
   def validate
     super

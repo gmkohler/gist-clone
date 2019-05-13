@@ -1,5 +1,13 @@
 class User < Sequel::Model
   one_to_many :gists, key: :author_id
+  one_to_many :comments
+
+  one_to_many :subscriptions
+  many_to_many :subscribed_gists, class: "Gist", join_table: :subscriptions, left_key: :subscriber_id, right_key: :gist_id
+
+  one_to_many :stars
+  many_to_many :starred_gists, class: "Gist", join_table: :stars, right_key: :gist_id
+
 
   def validate
     super
