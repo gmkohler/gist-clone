@@ -2,3 +2,8 @@ development:
   adapter: postgresql
   database: gist-clone_development
   pool: 5
+
+test:
+  adapter: postgresql
+  database: gist-clone_test
+  pool: 5
