@@ -6,9 +6,10 @@ RSpec.describe GistService do
     let(:description) { "" }
     let(:author_id) { author.id }
     let(:author) { FactoryBot.create(:user) }
+    let(:title) { Faker::File.file_name }
 
     subject(:create_gist) do
-      described_class.create_gist(author_id: author_id, description: description, private_gist: private_gist)
+      described_class.create_gist(author_id: author_id, title: title, description: description, private_gist: private_gist)
     end
 
     it "creates a gist" do

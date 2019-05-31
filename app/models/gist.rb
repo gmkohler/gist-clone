@@ -14,8 +14,16 @@ class Gist < Sequel::Model
   one_to_many :subscriptions
   many_to_many :subscribers, class: "User", join_table: :subscriptions
 
+  dataset_module do
+    def public
+      where(private_gist: false)
+    end
+  end
+
   def validate
     super
     validates_presence :author_id
   end
+
+  alias_method :private?, :private_gist
 end
