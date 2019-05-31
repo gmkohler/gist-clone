@@ -1,5 +1,7 @@
 class User < Sequel::Model
   one_to_many :gists, key: :author_id
+  one_to_many :public_gists, class: "Gist", key: :author_id, &:public
+
   one_to_many :comments
 
   one_to_many :subscriptions

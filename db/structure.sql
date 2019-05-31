@@ -94,7 +94,8 @@ CREATE TABLE public.gists (
     author_id uuid NOT NULL,
     created_at timestamp without time zone,
     description text,
-    private_gist boolean DEFAULT true NOT NULL
+    private_gist boolean DEFAULT true NOT NULL,
+    title text NOT NULL
 );
 
 
@@ -162,7 +163,8 @@ CREATE TABLE public.users (
     created_at timestamp without time zone,
     password text NOT NULL,
     handle public.citext NOT NULL,
-    display_name text NOT NULL
+    display_name text NOT NULL,
+    authentication_token text
 );
 
 
@@ -228,6 +230,14 @@ ALTER TABLE ONLY public.stars
 
 ALTER TABLE ONLY public.subscriptions
     ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_authentication_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_authentication_token_key UNIQUE (authentication_token);
 
 
 --
@@ -411,3 +421,4 @@ ALTER TABLE ONLY public.subscriptions
 SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" ("filename") VALUES ('20190511201659_create_core_models.rb');
 INSERT INTO "schema_migrations" ("filename") VALUES ('20190513170550_add_social_tables.rb');
+INSERT INTO "schema_migrations" ("filename") VALUES ('20190523034353_add_auth_to_users.rb');

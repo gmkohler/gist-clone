@@ -1,8 +1,9 @@
 module GistService
-  def self.create_gist(author_id:, description: nil, private_gist: true)
+  def self.create_gist(author_id:, title:, description: nil, private_gist: true)
     Sequel::Model.db.transaction do
       Gist.create(
         author_id: author_id,
+        title: title,
         description: description,
         private_gist: private_gist
       )

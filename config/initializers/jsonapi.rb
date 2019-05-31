@@ -1,10 +1,10 @@
 JSONAPI::Rails.configure do |config|
   # # Set a default serializable class mapping.
-  # config.jsonapi_class = Hash.new { |h, k|
-  #   names = k.to_s.split('::')
-  #   klass = names.pop
-  #   h[k] = [*names, "Serializable#{klass}"].join('::').safe_constantize
-  # }
+  config.jsonapi_class = Hash.new { |h, k|
+    names = k.to_s.split('::')
+    klass = names.pop
+    h[k] = [*names, "Serializable#{klass}"].join('::').safe_constantize
+  }
   #
   # # Set a default serializable class mapping for errors.
   # config.jsonapi_errors_class = Hash.new { |h, k|
@@ -33,9 +33,9 @@ JSONAPI::Rails.configure do |config|
   #
   # # Set default exposures.
   # # A lambda/proc that will be eval'd in the controller context.
-  # config.jsonapi_expose = lambda {
-  #   { url_helpers: ::Rails.application.routes.url_helpers }
-  # }
+  config.jsonapi_expose = lambda {
+    { url_helpers: ::Rails.application.routes.url_helpers }
+  }
   #
   # # Set default fields.
   # # A lambda/proc that will be eval'd in the controller context.
@@ -73,5 +73,5 @@ JSONAPI::Rails.configure do |config|
   # config.logger = Logger.new(STDOUT)
   #
   # # Uncomment the following to disable logging.
-  # config.logger = Logger.new('/dev/null')
+  config.logger = Logger.new('/dev/null')
 end
